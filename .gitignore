@@ -6,3 +6,8 @@
 
 venv/
 venv/*
+
+models/
+models/*
+plots/
+plots/*
