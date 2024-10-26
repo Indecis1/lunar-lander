@@ -71,8 +71,8 @@ class Agent:
 
 
     @staticmethod
-    def load_ai_model_weights(self,load_path_dir: str):
-        model =  build_model(self.input_size,  self.action_num , self.loss_fn, self.optimizer)
-        model.load_weights(os.path.join(load_path_dir, "target_network.weights.h5"))
+    def load_ai_model_weights(load_path_dir: str):
+        model =  build_model(agent_const.input_size,  agent_const.actions_num , tf.keras.losses.MeanSquaredError(), tf.keras.optimizers.Adam(lr= 0.001))
+        model.load_weights(os.path.join(load_path_dir, "network_to_train.weights.h5"))
         return model
         

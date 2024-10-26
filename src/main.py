@@ -36,7 +36,7 @@ def training(agent: Agent, num_episode: int = 1000, epsilon_start: float = 1.0, 
     env = gym.make('LunarLander-v2')
     env.action_space.seed(seed)
     epsilon = epsilon_start
-    avg_rewards_per_episode = []
+    rewards_per_episode = []
     # num_iter_before_printing = num_episode // 20
     print("/n")
     for episode in tqdm.tqdm(range(num_episode)):
@@ -56,16 +56,17 @@ def training(agent: Agent, num_episode: int = 1000, epsilon_start: float = 1.0, 
                     | Epsilon: {epsilon}')
                 break
         #avg_rewards /= i
-        avg_rewards_per_episode.append(rewards)
+        rewards_per_episode.append(rewards)
     
-        if episode % 10 == 0:
-            print(f'Last 10 episodes mean reward: {np.mean(avg_rewards_per_episode[-10:])}')
-        if np.mean(avg_rewards_per_episode[-100:]) >= 200:
+        if (episode+1) % 10 == 0:
+            print(f'Last 10 episodes mean reward: {np.mean(rewards_per_episode[-10:])}')
+           
+        if np.mean(rewards_per_episode[-100:]) >= 200:
                 print('*** Environment solved ***')
                 break
             
-    avg_rewards_per_episode = np.array(avg_rewards_per_episode)
-    plot_reward(episode, avg_rewards_per_episode, "Avg Reward per episode", save_plot_dir)
+    rewards_per_episode = np.array(rewards_per_episode)
+    plot_reward(episode+1, rewards_per_episode, "Avg Reward per episode", save_plot_dir)
     
     if save_dir != "":
         # save_path = "./models"
