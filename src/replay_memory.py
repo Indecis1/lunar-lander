@@ -7,7 +7,7 @@ import numpy as np
 
 class ReplayMemory:
     def __init__(self, action_size, buffer_size, batch_size, seed):
-        random.seed(seed)
+        # random.seed(seed)
         self.action_size = action_size
         self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size

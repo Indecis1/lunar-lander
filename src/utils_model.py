@@ -57,5 +57,5 @@ def create_model(input_size, action_size):
     inputs = build_input_layer(input_size)
     return build_model(
         inputs,
-        build_dense_block(inputs, [30, 15, 10], action_size, "softmax", dropout_rate)
+        build_dense_block(inputs, [80, 50, 50, 10 ], action_size, "softmax", dropout_rate)
     )

@@ -19,6 +19,32 @@ def create_path_if_not_exist(path: str) -> None:
     pathlib.Path(dir_path).mkdir(parents=True, exist_ok=True)
 
 
+def plot_losses(losses, save_plot_dir):
+    x = np.arange(1, len(losses) + 1, 1)
+    fig, ax = plt.subplots()
+    ax.plot(x, losses)
+    ax.set(xlabel="epoch", ylabel="loss",
+           title="losses evolution")
+    ax.grid()
+    if save_plot_dir != "":
+        create_path_if_not_exist(save_plot_dir)
+        fig.savefig(os.path.join(save_plot_dir, "loss_evolution.png"))
+    plt.show()
+
+
+def plot_score(scores, save_plot_dir):
+    x = np.arange(1, len(scores) + 1, 1)
+    fig, ax = plt.subplots()
+    ax.plot(x, scores)
+    ax.set(xlabel="episodes", ylabel="score",
+           title="score evolution")
+    ax.grid()
+    if save_plot_dir != "":
+        create_path_if_not_exist(save_plot_dir)
+        fig.savefig(os.path.join(save_plot_dir, "score_evolution.png"))
+    plt.show()
+
+
 def plot_reward(num_episode, avg_reward, title, save_plot_dir):
     x = np.arange(1, num_episode+1, 1)
     fig, ax = plt.subplots()
@@ -36,12 +62,13 @@ def training(agent: Agent, num_episode: int = 1000, epsilon_start: float = 1.0, 
     env = gym.make('LunarLander-v3')
     epsilon = epsilon_start
     avg_rewards_per_episode = []
-    # num_iter_before_printing = num_episode // 20
-    print("/n")
+    scores = []
+    print("\n")
     for episode in tqdm.tqdm(range(num_episode)):
         obs, _ = env.reset()
         avg_rewards = 0
         i = 0
+        score = 0
         # for timestep in range(max_timestep):
         while True:
             action = agent.play_action(obs, epsilon)
@@ -49,16 +76,20 @@ def training(agent: Agent, num_episode: int = 1000, epsilon_start: float = 1.0, 
             agent.step(obs, action, reward, new_obs, done)
             obs = new_obs
             avg_rewards += reward
+            score += reward
             i += 1
             if done:
                 # i = timestep + 1
                 break
         avg_rewards /= i
         avg_rewards_per_episode.append(avg_rewards)
+        scores.append(score)
         epsilon = max(epsilon_min, epsilon * epsilon_decay_rate)
         # if (episode+1) % num_iter_before_printing == 0:
         #     print("\n episode: {}, Average reward: {}".format(episode+1, avg_rewards))
     avg_rewards_per_episode = np.array(avg_rewards_per_episode)
+    plot_losses(agent.losses, save_plot_dir)
+    plot_score(scores, save_plot_dir)
     plot_reward(num_episode, avg_rewards_per_episode, "Avg Reward per episode", save_plot_dir)
     if save_dir != "":
         # save_path = "./models"
@@ -84,5 +115,9 @@ def model_evaluation(load_path_dir):
 
 if __name__ == "__main__":
     agent = Agent(42)
-    training(agent, num_episode=1000, save_plot_dir="plots/", save_dir="models/")
+    training(agent, num_episode=50, save_plot_dir="plots/", save_dir="models/")
     model_evaluation("models/")
+
+# TODO
+# Regarder la loss
+# Changer la topologie du réseau
